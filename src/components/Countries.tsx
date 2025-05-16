@@ -25,9 +25,14 @@ export interface Country {
 }
 
 const Countries = () => {
-    // https://restcountries.com/v3.1/all
-    const [countries, setCountries] = useState([]);
-    const [loading, setLoading] = useState(true);
+    const [countries, setCountries] = useState<Country[]>([]);
+    const [loading, setLoading] = useState<boolean>(true);
+
+    const [rangeValue, setRangeValue] = useState(20);
+
+    const handleRangeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setRangeValue(Number(event.target.value));
+    };
 
     useEffect(() => {
         const fetchCountries = async () => {
@@ -58,11 +63,24 @@ const Countries = () => {
             {loading ? (
                 <p>Loading...</p>
             ) : (
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                    {countries.map((country: Country) => (
-                        <Card key={country.cca3} {...country} />
-                    ))}
-                </div>
+                <>
+                    <ul>
+                        <li>
+                            <input
+                                type="range"
+                                min="1"
+                                max={countries.length}
+                                value={rangeValue}
+                                onChange={handleRangeChange}
+                            />
+                        </li>
+                    </ul>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                        {countries.slice(0, rangeValue).map((country: Country) => (
+                            <Card key={country.cca3} {...country} />
+                        ))}
+                    </div>
+                </>
             )}
         </div>
     );
