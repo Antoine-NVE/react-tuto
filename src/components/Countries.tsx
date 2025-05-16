@@ -120,6 +120,7 @@ const Countries = () => {
                                         (continent) => selectedContinents[continent as keyof typeof selectedContinents]
                                     )
                             )
+                            .sort((a: Country, b: Country) => a.name.common.localeCompare(b.name.common))
                             .slice(0, rangeValue)
                             .map((country: Country) => (
                                 <Card key={country.cca3} {...country} />
