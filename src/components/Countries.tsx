@@ -22,16 +22,35 @@ export interface Country {
         svg: string;
         alt?: string;
     };
+    continents?: string[];
 }
 
 const Countries = () => {
     const [countries, setCountries] = useState<Country[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
 
+    const [selectedContinents, setSelectedContinents] = useState({
+        Africa: true,
+        'North America': true,
+        'South America': true,
+        Asia: true,
+        Europe: true,
+        Oceania: true,
+        Antarctica: true,
+    });
+
     const [rangeValue, setRangeValue] = useState(20);
 
     const handleRangeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setRangeValue(Number(event.target.value));
+    };
+
+    const handleCheckboxChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const { name, checked } = event.target;
+        setSelectedContinents((prev) => ({
+            ...prev,
+            [name]: checked,
+        }));
     };
 
     useEffect(() => {
@@ -64,21 +83,47 @@ const Countries = () => {
                 <p>Loading...</p>
             ) : (
                 <>
-                    <ul>
-                        <li>
+                    <ul className="flex flex-wrap items-center gap-4 mb-6">
+                        <li className="flex items-center">
                             <input
                                 type="range"
                                 min="1"
                                 max={countries.length}
                                 value={rangeValue}
                                 onChange={handleRangeChange}
+                                className="w-40 accent-blue-500"
                             />
+                            <span className="ml-2 text-sm text-gray-700">{rangeValue}</span>
                         </li>
-                    </ul>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                        {countries.slice(0, rangeValue).map((country: Country) => (
-                            <Card key={country.cca3} {...country} />
+                        {Object.entries(selectedContinents).map(([continent, isChecked]) => (
+                            <li key={continent} className="flex items-center">
+                                <input
+                                    type="checkbox"
+                                    id={continent}
+                                    name={continent}
+                                    checked={isChecked}
+                                    onChange={handleCheckboxChange}
+                                    className="accent-blue-500 mr-1"
+                                />
+                                <label htmlFor={continent} className="text-sm text-gray-800 cursor-pointer">
+                                    {continent}
+                                </label>
+                            </li>
                         ))}
+                    </ul>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                        {countries
+                            .filter(
+                                (country: Country) =>
+                                    country.continents &&
+                                    country.continents.some(
+                                        (continent) => selectedContinents[continent as keyof typeof selectedContinents]
+                                    )
+                            )
+                            .slice(0, rangeValue)
+                            .map((country: Country) => (
+                                <Card key={country.cca3} {...country} />
+                            ))}
                     </div>
                 </>
             )}
