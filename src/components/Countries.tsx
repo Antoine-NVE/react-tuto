@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
+import Card from './Card';
 
-type Country = {
+export interface Country {
     cca3: string;
     name: {
         common: string;
@@ -21,7 +22,7 @@ type Country = {
         svg: string;
         alt?: string;
     };
-};
+}
 
 const Countries = () => {
     // https://restcountries.com/v3.1/all
@@ -59,14 +60,7 @@ const Countries = () => {
             ) : (
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                     {countries.map((country: Country) => (
-                        <div key={country.cca3} className="border p-4 rounded shadow">
-                            <img src={country.flags.png} alt={country.flags.alt} className="w-full h-auto mb-2" />
-                            <h2 className="text-lg font-bold">{country.name.common}</h2>
-                            <p>Capital: {country.capital ? country.capital[0] : 'N/A'}</p>
-                            <p>Region: {country.region}</p>
-                            <p>Subregion: {country.subregion || 'N/A'}</p>
-                            <p>Population: {country.population.toLocaleString()}</p>
-                        </div>
+                        <Card key={country.cca3} {...country} />
                     ))}
                 </div>
             )}
